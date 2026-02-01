@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Will you be my Valentine? 💘</title>
+  <style>
+    :root { --bg1:#ff7aa2; --bg2:#ffd1dc; --card:#ffffffd9; --text:#1f1f1f; }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 20% 10%, #fff3, transparent 60%),
+                  radial-gradient(900px 600px at 80% 20%, #fff4, transparent 55%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+
+    /* floating hearts */
+    .heart{
+      position:absolute;
+      width:18px; height:18px;
+      transform: rotate(45deg);
+      background: #ff2d55;
+      opacity:.25;
+      animation: floatUp linear infinite;
+      border-radius:4px;
+    }
+    .heart:before,.heart:after{
+      content:"";
+      position:absolute;
+      width:18px; height:18px;
+      background:#ff2d55;
+      border-radius:50%;
+    }
+    .heart:before{ left:-9px; top:0; }
+    .heart:after{ left:0; top:-9px; }
+    @keyframes floatUp{
+      from{ transform: translateY(30vh) rotate(45deg) scale(.8); }
+      to{ transform: translateY(-120vh) rotate(45deg) scale(1.15); }
+    }
+
+    .card{
+      width:min(560px, 92vw);
+      background:var(--card);
+      border-radius:24px;
+      padding:28px 22px;
+      box-shadow: 0 20px 60px #00000025;
+      text-align:center;
+      backdrop-filter: blur(10px);
+      position:relative;
+    }
+
+    h1{
+      margin:0 0 10px;
+      font-size: clamp(26px, 4vw, 40px);
+    }
+
+    .subtitle{
+      margin:0 0 18px;
+      opacity:.85;
+    }
+
+    .stage{
+      position:relative;
+      height:140px;
+      margin-top:12px;
+      border-radius:18px;
+      background: linear-gradient(180deg, #ffffff80, #ffffff20);
+      overflow:hidden;
+    }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      padding:14px 22px;
+      border-radius:999px;
+      font-weight:800;
+      transition: transform .18s ease;
+    }
+
+    #yes{
+      background: linear-gradient(180deg, #2effa6, #00d07b);
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform: translate(-120%, -50%) scale(1);
+    }
+
+    #no{
+      background: linear-gradient(180deg, #ff5b6b, #ff2d55);
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform: translate(20%, -50%);
+    }
+
+    .hint{
+      margin-top:16px;
+      font-size:14px;
+      opacity:.8;
+    }
+
+    .result{
+      margin-top:18px;
+      font-weight:700;
+    }
+
+    .hidden{ display:none; }
+
+    /* confetti */
+    .confetti{
+      position:absolute;
+      width:8px; height:14px;
+      top:-20px;
+      animation: fall 1200ms ease-in forwards;
+    }
+    @keyframes fall{
+      to{ transform: translateY(220px) rotate(260deg); opacity:0; }
+    }
+  </style>
+</head>
+<body>
+
+<script>
+  // floating hearts background
+  for(let i=0;i<18;i++){
+    const h=document.createElement('div');
+    h.className='heart';
+    h.style.left=Math.random()*100+'vw';
+    h.style.animationDuration=(7+Math.random()*8)+'s';
+    h.style.animationDelay=(Math.random()*-10)+'s';
+    document.body.appendChild(h);
+  }
+</script>
+
+<div class="card" id="card">
+  <h1>HIBA IKHAN ❤️ ,Will you be my Valentine? 💘</h1>
+  <p class="subtitle">
+    It’s just a <b>YES</b> or a <b>NO</b>…<br>
+    (but the <b>NO</b> button is kinda shy 😅)
+  </p>
+
+  <div class="stage" id="stage">
+    <button class="btn" id="yes">YES 💚</button>
+    <button class="btn" id="no">NO 💔</button>
+  </div>
+
+  <div class="hint" id="hint">
+    Try clicking <b>NO</b>… if you can 😈
+  </div>
+
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+  const stage = document.getElementById('stage');
+  const yes = document.getElementById('yes');
+  const no  = document.getElementById('no');
+  const result = document.getElementById('result');
+  const hint = document.getElementById('hint');
+  const card = document.getElementById('card');
+
+  let yesScale = 1;
+  let noMoves = 0;
+
+  function rand(min,max){ return Math.random()*(max-min)+min; }
+
+  function moveNo(){
+    const maxX = stage.clientWidth - no.offsetWidth;
+    const maxY = stage.clientHeight - no.offsetHeight;
+    no.style.left = rand(0,maxX)+'px';
+    no.style.top  = rand(0,maxY)+'px';
+    no.style.transform = 'translate(0,0)';
+    noMoves++;
+
+    yesScale = Math.min(2.2, yesScale + 0.12);
+    yes.style.transform = `translate(-120%, -50%) scale(${yesScale})`;
+
+    if(noMoves >= 5){
+      no.classList.add('hidden');
+      hint.textContent = "Oops… the NO button ran away 👀";
+    }
+  }
+
+  function confetti(){
+    const colors = ["#ff2d55","#ffcc00","#34c759","#00c7ff","#af52de"];
+    for(let i=0;i<30;i++){
+      const c=document.createElement('div');
+      c.className='confetti';
+      c.style.left=rand(20,80)+'%';
+      c.style.background=colors[Math.floor(Math.random()*colors.length)];
+      card.appendChild(c);
+      setTimeout(()=>c.remove(),1500);
+    }
+  }
+
+  no.addEventListener('mouseenter', moveNo);
+  no.addEventListener('click', moveNo);
+  no.addEventListener('touchstart', e => { e.preventDefault(); moveNo(); });
+
+  yes.addEventListener('click', () => {
+    yes.style.transform = 'translate(-120%, -50%) scale(2.4)';
+    no.classList.add('hidden');
+    result.innerHTML = "YAY 🎉💖<br>It’s a date!";
+    hint.textContent = "Best choice ever 😌";
+    confetti();
+  });
+</script>
+
+</body>
+</html>
